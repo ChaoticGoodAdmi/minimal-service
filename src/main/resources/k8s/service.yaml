@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: minimal-service-service
+  labels:
+    app: minimal-service
+spec:
+  selector:
+    app: minimal-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: ClusterIP

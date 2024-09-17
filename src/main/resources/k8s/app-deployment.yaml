@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: user-service-deployment
+  namespace: prod
   labels:
     app: user-service
 spec:
@@ -16,7 +17,7 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: 2admi/minimal-service:1.1.1
+          image: 2admi/minimal-service:1.1.2
           ports:
             - containerPort: 8000
           env:

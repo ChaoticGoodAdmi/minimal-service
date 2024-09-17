@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.job.name }}
+  namespace: {{ .Values.deployment.namespace }}
+spec:
+  template:
+    spec:
+      containers:
+        - name: init-db
+          image: {{ .Values.job.image }}
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.database.secrets.name }}
+                  key: {{ .Values.database.secrets.usernameKey }}
+            - name: POSTGRES_DB
+              value: {{ .Values.database.name }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.database.secrets.name }}
+                  key: {{ .Values.database.secrets.passwordKey }}
+          command: ["psql"]
+          args:
+            - "--host={{ .Values.database.host }}"
+            - "--port={{ .Values.database.port }}"
+            - "--username=$(POSTGRES_USER)"
+            - "--dbname=$(POSTGRES_DB)"
+            - "--file=/scripts/migration.sql"
+          volumeMounts:
+            - name: db-migration-config
+              mountPath: /scripts
+      volumes:
+        - name: db-migration-config
+          configMap:
+            name: {{ .Values.migrationConfig.name }}
+      restartPolicy: {{ .Values.job.restartPolicy }}

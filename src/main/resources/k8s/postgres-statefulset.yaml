@@ -2,12 +2,13 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres
+  namespace: prod
 spec:
+  serviceName: "postgres"
+  replicas: 1
   selector:
     matchLabels:
       app: postgres
-  serviceName: "postgres"
-  replicas: 1
   template:
     metadata:
       labels:
@@ -21,7 +22,7 @@ spec:
               name: postgres
           env:
             - name: POSTGRES_DB
-              value: "userdb"
+              value: userdb
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:

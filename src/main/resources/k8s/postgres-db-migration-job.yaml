@@ -2,6 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: db-migration-config-job
+  namespace: prod
 spec:
   template:
     spec:

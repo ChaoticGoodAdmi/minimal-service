@@ -1,5 +1,6 @@
 package ru.ushakov.minimalservice.user.controller
 
+import io.micrometer.core.annotation.Timed
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -13,6 +14,7 @@ import ru.ushakov.minimalservice.user.service.UserService
 class UserController(private val userService: UserService) {
 
     @PostMapping
+    @Timed(value = "user.create.latency", description = "Time taken to create a user")
     fun createUser(@Valid @RequestBody userDto: UserDto): ResponseEntity<User> {
         val newUser = User(
             username = userDto.username,
@@ -25,6 +27,7 @@ class UserController(private val userService: UserService) {
     }
 
     @GetMapping("/{userId}")
+    @Timed(value = "user.get.latency", description = "Time taken to retrieve a user info")
     fun getUserById(@PathVariable userId: Long): ResponseEntity<User> {
         val user = userService.getUserById(userId)
         return user.map { ResponseEntity.ok(it) }
@@ -32,6 +35,7 @@ class UserController(private val userService: UserService) {
     }
 
     @PutMapping("/{userId}")
+    @Timed(value = "user.update.latency", description = "Time taken to update a user info")
     fun updateUser(@PathVariable userId: Long, @Valid @RequestBody userDto: UserDto): ResponseEntity<User> {
         val updatedUser = User(
             id = userId,
@@ -47,6 +51,7 @@ class UserController(private val userService: UserService) {
     }
 
     @DeleteMapping("/{userId}")
+    @Timed(value = "user.delete.latency", description = "Time taken to delete a user")
     fun deleteUser(@PathVariable userId: Long): ResponseEntity<Unit> {
         userService.deleteUser(userId)
         return ResponseEntity.noContent().build()

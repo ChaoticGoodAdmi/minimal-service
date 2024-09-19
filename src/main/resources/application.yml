@@ -15,4 +15,13 @@ spring:
           allow_jdbc_metadata_access: false
   application:
     name: minimal-service
-
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, prometheus
+  endpoint:
+    prometheus:
+      enabled: true
+  metrics:
+    enabled: true

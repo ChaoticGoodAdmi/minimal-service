@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: 2admi/minimal-service:1.2.0
+          image: 2admi/minimal-service:1.2.1
           ports:
             - containerPort: 8000
           env:

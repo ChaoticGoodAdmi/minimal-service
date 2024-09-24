@@ -34,6 +34,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-noarg:1.8.0")
     implementation("org.jetbrains.kotlin:kotlin-allopen:1.8.0")
     implementation("io.micrometer:micrometer-registry-prometheus")
+    implementation("io.micrometer:micrometer-core")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

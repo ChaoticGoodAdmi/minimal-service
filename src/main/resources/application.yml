@@ -19,9 +19,22 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, metrics, prometheus
+        include: "*"
   endpoint:
     prometheus:
       enabled: true
   metrics:
-    enabled: true
+    distribution:
+      percentiles:
+        all:
+          - 0.5
+          - 0.95
+          - 0.99
+      percentiles-histogram:
+        http.server.requests: true
+    tags:
+      application: "user-service"
+  prometheus:
+    metrics:
+      export:
+        enabled: true

@@ -1,0 +1,18 @@
+server:
+  port: 8000
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/userdb
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        boot:
+          allow_jdbc_metadata_access: false
+  application:
+    name: minimal-service
+

@@ -1,0 +1,106 @@
+deployment:
+  name: user-service-deployment
+  namespace: prod
+  replicas: 2
+
+app:
+  name: user-service
+
+container:
+  name: user-service
+  image: 2admi/minimal-service:1.1.2
+  port: 8000
+
+env:
+  DB_HOST: postgres
+  DB_PORT: "5432"
+  DB_NAME: userdb
+  secrets:
+    name: db-secrets
+    usernameKey: DB_USERNAME
+    passwordKey: DB_PASSWORD
+
+probes:
+  liveness:
+    port: 8000
+    path: /health
+    initialDelaySeconds: 10
+    periodSeconds: 60
+  readiness:
+    port: 8000
+    path: /health
+    initialDelaySeconds: 10
+    periodSeconds: 10
+
+service:
+  name: user-service-svc
+  port: 80
+  targetPort: 8000
+  type: ClusterIP
+
+ingress:
+  name: user-service-ingress
+  className: nginx
+  host: arch.homework
+  path: /
+
+config:
+  name: user-service-config
+
+database:
+  host: postgres
+  port: 5432
+  name: userdb
+  username: ${DB_USERNAME}
+  password: ${DB_PASSWORD}
+  schema: public
+  tableName: users
+  secrets:
+    name: db-secrets
+    usernameKey: DB_USERNAME
+    passwordKey: DB_PASSWORD
+
+migrationConfig:
+  name: db-migration-config
+
+job:
+  name: db-migration-config-job
+  image: postgres:13
+  restartPolicy: OnFailure
+
+pvc:
+  name: postgres-storage
+  accessMode: ReadWriteOnce
+  storage: 1Gi
+
+secret:
+  name: db-secrets
+  username: cG9zdGdyZXM=
+  password: cG9zdGdyZXM=
+
+postgresService:
+  name: postgres
+  selector: postgres
+  port: 5432
+  targetPort: 5432
+
+statefulset:
+  name: postgres
+  appLabel: postgres
+  serviceName: postgres
+  replicas: 1
+
+postgres:
+  image: postgres:13
+  containerPort: 5432
+  database: userdb
+
+secrets:
+  name: db-secrets
+  usernameKey: DB_USERNAME
+  passwordKey: DB_PASSWORD
+
+volume:
+  name: postgres-storage
+  accessMode: ReadWriteOnce
+  storage: 1Gi

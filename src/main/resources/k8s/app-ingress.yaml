@@ -1,17 +1,18 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: minimal-service-ingress
+  name: user-service-ingress
+  namespace: prod
 spec:
   ingressClassName: nginx
   rules:
     - host: arch.homework
       http:
         paths:
-          - path: /health
+          - path: /
             pathType: Prefix
             backend:
               service:
-                name: minimal-service-service
+                name: user-service-svc
                 port:
                   number: 80

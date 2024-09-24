@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migration-config-job
+  namespace: prod
+spec:
+  template:
+    spec:
+      containers:
+        - name: init-db
+          image: postgres:13
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secrets
+                  key: DB_USERNAME
+            - name: POSTGRES_DB
+              value: userdb
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secrets
+                  key: DB_PASSWORD
+          command: ["psql"]
+          args:
+            - "--host=postgres"
+            - "--port=5432"
+            - "--username=$(POSTGRES_USER)"
+            - "--dbname=$(POSTGRES_DB)"
+            - "--file=/scripts/migration.sql"
+          volumeMounts:
+            - name: db-migration-config
+              mountPath: /scripts
+      volumes:
+        - name: db-migration-config
+          configMap:
+            name: db-migration-config
+      restartPolicy: OnFailure

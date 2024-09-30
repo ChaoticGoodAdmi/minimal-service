@@ -11,11 +11,6 @@ import java.util.*
 class UserService(private val userRepository: UserRepository) {
 
     fun createUser(user: User): User {
-        val existingUser = userRepository.findByUsername(user.username)
-        if (existingUser != null) {
-            throw ResponseStatusException(HttpStatus.CONFLICT, "Username is already taken")
-        }
-
         return userRepository.save(user)
     }
 
@@ -29,7 +24,6 @@ class UserService(private val userRepository: UserRepository) {
             val currentUser = user.get().copy(
                 firstName = updatedUser.firstName,
                 lastName = updatedUser.lastName,
-                email = updatedUser.email,
                 phone = updatedUser.phone
             )
             return Optional.of(userRepository.save(currentUser))

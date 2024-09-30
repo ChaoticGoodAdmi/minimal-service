@@ -1,6 +1,5 @@
 package ru.ushakov.minimalservice.user.controller
 
-import io.micrometer.core.annotation.Timed
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -16,10 +15,9 @@ class UserController(private val userService: UserService) {
     @PostMapping
     fun createUser(@Valid @RequestBody userDto: UserDto): ResponseEntity<User> {
         val newUser = User(
-            username = userDto.username,
+            id = userDto.id,
             firstName = userDto.firstName,
             lastName = userDto.lastName,
-            email = userDto.email,
             phone = userDto.phone
         )
         return ResponseEntity(userService.createUser(newUser), HttpStatus.CREATED)
@@ -33,14 +31,12 @@ class UserController(private val userService: UserService) {
     }
 
     @PutMapping("/{userId}")
-    fun updateUser(@PathVariable userId: Long, @Valid @RequestBody userDto: UserDto): ResponseEntity<User> {
+    fun updateUser(@PathVariable userId: Long, @Valid @RequestBody request: UpdateUserRequest): ResponseEntity<User> {
         val updatedUser = User(
             id = userId,
-            username = userDto.username,
-            firstName = userDto.firstName,
-            lastName = userDto.lastName,
-            email = userDto.email,
-            phone = userDto.phone
+            firstName = request.firstName,
+            lastName = request.lastName,
+            phone = request.phone
         )
         return userService.updateUser(userId, updatedUser)
             .map { ResponseEntity.ok(it) }

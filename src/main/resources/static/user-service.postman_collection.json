@@ -34,7 +34,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"username\": \"testUser123\",\r\n  \"firstName\": \"Ivan\",\r\n  \"lastName\": \"Ivanov\",\r\n  \"email\": \"ivanov.ivan@example.com\",\r\n  \"phone\": \"+1234567890\"\r\n}",
+					"raw": "{\r\n  \"id\": \"1\",\r\n  \"firstName\": \"Ivan\",\r\n  \"lastName\": \"Ivanov\",\r\n  \"phone\": \"+1234567890\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -65,7 +65,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"username\": \"testUser123\",\r\n  \"firstName\": \"Ivan\",\r\n  \"lastName\": \"Ivanov\",\r\n  \"email\": \"iivanov@example.com\",\r\n  \"phone\": \"+1234567890\"\r\n}",
+					"raw": "{\r\n  \"id\": \"1\",\r\n  \"firstName\": \"Ivan\",\r\n  \"lastName\": \"Ivanov\",\r\n  \"phone\": \"+1234567890\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"

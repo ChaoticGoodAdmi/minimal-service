@@ -5,6 +5,4 @@ import org.springframework.stereotype.Repository
 import ru.ushakov.minimalservice.user.domain.User
 
 @Repository
-interface UserRepository : JpaRepository<User, Long> {
-    fun findByUsername(username: String): User?
-}
+interface UserRepository : JpaRepository<User, Long>

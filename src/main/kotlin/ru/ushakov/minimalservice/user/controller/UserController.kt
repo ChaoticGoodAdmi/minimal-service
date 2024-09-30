@@ -1,5 +1,6 @@
 package ru.ushakov.minimalservice.user.controller
 
+import io.micrometer.core.annotation.Timed
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

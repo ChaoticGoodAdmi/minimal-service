@@ -15,4 +15,26 @@ spring:
           allow_jdbc_metadata_access: false
   application:
     name: minimal-service
-
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    prometheus:
+      enabled: true
+  metrics:
+    distribution:
+      percentiles:
+        all:
+          - 0.5
+          - 0.95
+          - 0.99
+      percentiles-histogram:
+        http.server.requests: true
+    tags:
+      application: "user-service"
+  prometheus:
+    metrics:
+      export:
+        enabled: true

@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-db-migration-config
+  namespace: prod
+data:
+  migration.sql: |
+    CREATE SCHEMA IF NOT EXISTS public;
+        
+    CREATE TABLE auth_user (
+    id BIGSERIAL PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP
+    );
+
+    CREATE TABLE refresh_token (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES auth_user(id) ON DELETE CASCADE,
+    token VARCHAR(255) NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    );
+    
+    CREATE UNIQUE INDEX idx_username ON auth_user (username);
+    CREATE UNIQUE INDEX idx_email ON auth_user (email);
+    CREATE INDEX idx_user_id ON refresh_token (user_id);
+    
+    DELETE FROM refresh_token WHERE expires_at < NOW();

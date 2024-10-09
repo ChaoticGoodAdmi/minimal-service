@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: auth-service
-          image: 2admi/minimal-auth-service:0.0.1
+          image: 2admi/minimal-auth-service:1.0.1
           ports:
             - containerPort: 8001
           env:
@@ -37,3 +37,8 @@ spec:
                 secretKeyRef:
                   name: db-secrets
                   key: DB_PASSWORD
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: db-secrets
+                  key: JWT_SECRET_KEY

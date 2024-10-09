@@ -48,3 +48,29 @@ GET http://arch.homework/api/v1/user/1 [200 OK, 264B, 68ms]
 → Delete user
 DELETE http://arch.homework/api/v1/user/1 [204 No Content, 88B, 71ms]
 ```
+
+### Инструкция по запуску ИНФРАСТРУКТУРЫ в кластере Kubernetes
+
+1. Установить кластер Kubernetes
+2. Выполните команды:
+
+```bash
+cd src/main/resources/k8s
+## разворачивание user-service
+cd user-service
+kubectl apply -f postgres-pvc.yaml -f postgres-secret.yaml -f postgres-statefulset.yaml -f postgres-service.yaml 
+kubectl apply -f postgres-db-migration-config.yaml -f postgres-db-migration-job.yaml 
+kubectl apply -f app-deployment.yaml -f app-service.yaml
+cd ..
+
+## разворачивание auth-service
+cd auth-service
+kubectl apply -f postgres-auth-pvc.yaml -f postgres-auth-statefulset.yaml -f postgres-auth-service.yaml
+kubectl apply -f postgres-auth-db-migration-config.yaml -f postgres-auth-db-migration-job.yaml
+kubectl apply -f app-auth-deployment.yaml -f app-auth-service.yaml
+cd ..
+
+## разворачивание API Gateway
+cd api-gateway
+kubectl apply -f app-gateway-config.yaml -f app-gateway-deployment.yaml -f app-gateway-service.yaml -f app-gateway-ingress.yaml 
+```

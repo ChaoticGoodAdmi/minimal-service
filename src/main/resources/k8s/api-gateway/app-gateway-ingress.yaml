@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: user-service-ingress
+  name: auth-gateway-ingress
   namespace: prod
 spec:
   ingressClassName: nginx
@@ -13,6 +13,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: user-service-svc
+                name: api-gateway-svc
                 port:
                   number: 80

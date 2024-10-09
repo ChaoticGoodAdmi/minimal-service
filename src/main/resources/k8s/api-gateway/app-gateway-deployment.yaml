@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: api-gateway
-          image: 2admi/minimal-api-gateway:0.0.1
+          image: 2admi/minimal-api-gateway:1.0.1
           ports:
             - containerPort: 8888
           env:
@@ -31,3 +31,8 @@ spec:
                 configMapKeyRef:
                   name: gateway-config
                   key: USER_SERVICE_URL
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: db-secrets
+                  key: JWT_SECRET_KEY

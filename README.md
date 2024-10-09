@@ -74,3 +74,9 @@ cd ..
 cd api-gateway
 kubectl apply -f app-gateway-config.yaml -f app-gateway-deployment.yaml -f app-gateway-service.yaml -f app-gateway-ingress.yaml 
 ```
+3. Выполнить команду 
+```bash
+cd ..\..\static
+newman run minimal-service-testing.postman_collection.json -e arch-homework-env.postman_environment.json --reporters html --reporter-html-export report.html --delay-request 100
+```
+4. Откройте файл src/main/resources/static/report.html и убедитесь в корректности выполненных запросов.

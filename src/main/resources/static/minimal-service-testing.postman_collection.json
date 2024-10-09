@@ -1,0 +1,496 @@
+{
+	"info": {
+		"_postman_id": "be0ce7db-c11a-4e22-a26c-ec0b5e076574",
+		"name": "Minimal Service Testing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12899390"
+	},
+	"item": [
+		{
+			"name": "1. Register user #1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData = pm.response.json();\r",
+							"pm.environment.set(\"userId1\", jsonData.id);\r",
+							"pm.test(\"Регистрация прошла успешно\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(jsonData).to.have.property('id');\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let username1 = pm.variables.replaceIn('{{$randomUserName}}');\r",
+							"let password1 = pm.variables.replaceIn('{{$randomPassword}}');\r",
+							"\r",
+							"// Сохраняем сгенерированные данные в переменные окружения для использования на шаге 5\r",
+							"pm.environment.set(\"username1\", username1);\r",
+							"pm.environment.set(\"password1\", password1);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"{{username1}}\",\r\n    \"password\": \"{{password1}}\",\r\n    \"email\": \"{{$randomUserName}}@example.com\",\r\n    \"phone\": \"7123456789\",\r\n    \"firstName\": \"{{$randomFirstName}}\",\r\n    \"lastName\": \"{{$randomLastName}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/auth/register",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2. Get User Unauthorized Error",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Доступ к профилю без авторизации запрещен\", function () {\r",
+							"    pm.response.to.have.status(401); // Ожидаем ошибку 401 Unauthorized\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/user/{{userId1}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"user",
+						"{{userId1}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3. Login user #1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Получаем данные ответа\r",
+							"let jsonData = pm.response.json();\r",
+							"\r",
+							"// Проверка, что запрос выполнился успешно\r",
+							"pm.test(\"Логин прошел успешно\", function () {\r",
+							"    pm.response.to.have.status(200); // Проверка, что статус 200\r",
+							"    pm.expect(jsonData).to.have.property('token'); // Проверка, что вернулся токен\r",
+							"    pm.expect(jsonData).to.have.property('refreshToken'); // Проверка, что вернулся refreshToken\r",
+							"});\r",
+							"\r",
+							"// Сохраняем token и refreshToken в переменные окружения для дальнейшего использования\r",
+							"pm.environment.set(\"token\", jsonData.token);\r",
+							"pm.environment.set(\"refreshToken\", jsonData.refreshToken);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"{{username1}}\",\r\n    \"password\": \"{{password1}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/auth/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4. Update User #1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Проверка успешного обновления профиля\r",
+							"pm.test(\"Профиль успешно обновлен\", function () {\r",
+							"    pm.response.to.have.status(200); // Проверяем, что ответ 200\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let newFirstName = pm.variables.replaceIn('{{$randomFirstName}}');\r",
+							"let newLastName = pm.variables.replaceIn('{{$randomLastName}}');\r",
+							"let newPhoneNumber = '7' + Math.floor(Math.random() * 1000000000).toString(); // Генерация случайного номера телефона\r",
+							"\r",
+							"// Сохраняем сгенерированные данные в переменные окружения для использования на шаге 5\r",
+							"pm.environment.set(\"newFirstName\", newFirstName);\r",
+							"pm.environment.set(\"newLastName\", newLastName);\r",
+							"pm.environment.set(\"newPhoneNumber\", newPhoneNumber);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\": \"{{newFirstName}}\",\r\n    \"lastName\": \"{{newLastName}}\",\r\n    \"phone\": \"{{newPhoneNumber}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/user/{{userId1}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"user",
+						"{{userId1}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5. Get User #1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData = pm.response.json();\r",
+							"\r",
+							"// Проверка, что данные пользователя изменились корректно\r",
+							"pm.test(\"Профиль изменен корректно\", function () {\r",
+							"    pm.response.to.have.status(200); // Проверяем статус 200\r",
+							"\r",
+							"    // Сравниваем данные в ответе с сгенерированными\r",
+							"    pm.expect(jsonData.firstName).to.eql(pm.environment.get(\"newFirstName\"));\r",
+							"    pm.expect(jsonData.lastName).to.eql(pm.environment.get(\"newLastName\"));\r",
+							"    pm.expect(jsonData.phone).to.eql(pm.environment.get(\"newPhoneNumber\"));\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/user/{{userId1}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"user",
+						"{{userId1}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6. Logout user #1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Logout прошел успешно\", function () {\r",
+							"    pm.response.to.have.status(200); // Проверяем, что ответ имеет статус 200\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"refreshToken\": \"{{refreshToken}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/auth/logout",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "7. Register user #2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData = pm.response.json();\r",
+							"pm.environment.set(\"userId2\", jsonData.id);\r",
+							"pm.test(\"Регистрация прошла успешно\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(jsonData).to.have.property('id');\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let username2 = pm.variables.replaceIn('{{$randomUserName}}');\r",
+							"let password2 = pm.variables.replaceIn('{{$randomPassword}}');\r",
+							"\r",
+							"// Сохраняем сгенерированные данные в переменные окружения для использования на шаге 5\r",
+							"pm.environment.set(\"username2\", username2);\r",
+							"pm.environment.set(\"password2\", password2);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"{{username2}}\",\r\n    \"password\": \"{{password2}}\",\r\n    \"email\": \"{{$randomUserName}}@example.com\",\r\n    \"phone\": \"7123456789\",\r\n    \"firstName\": \"{{$randomFirstName}}\",\r\n    \"lastName\": \"{{$randomLastName}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/auth/register",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "8. Login user #2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Получаем данные ответа\r",
+							"let jsonData = pm.response.json();\r",
+							"\r",
+							"// Проверка, что запрос выполнился успешно\r",
+							"pm.test(\"Логин прошел успешно\", function () {\r",
+							"    pm.response.to.have.status(200); // Проверка, что статус 200\r",
+							"    pm.expect(jsonData).to.have.property('token'); // Проверка, что вернулся токен\r",
+							"    pm.expect(jsonData).to.have.property('refreshToken'); // Проверка, что вернулся refreshToken\r",
+							"});\r",
+							"\r",
+							"// Сохраняем token и refreshToken в переменные окружения для дальнейшего использования\r",
+							"pm.environment.set(\"token\", jsonData.token);\r",
+							"pm.environment.set(\"refreshToken\", jsonData.refreshToken);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"{{username2}}\",\r\n    \"password\": \"{{password2}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/auth/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "9. Update User #1 with User #2 Error",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Пользователь 2 не может изменить профиль пользователя 1\", function () {\r",
+							"    pm.response.to.have.status(403); // Ожидаем статус 403 Forbidden\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\": \"{{$randomFirstName}}\",\r\n    \"lastName\": \"{{$randomLastName}}\",\r\n    \"phone\": \"{{$randomPhoneNumber}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/user/{{userId1}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"user",
+						"{{userId1}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
